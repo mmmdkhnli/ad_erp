@@ -25,7 +25,7 @@ export class Quote {
   @Column({ type: "int" })
   customerId!: number;
 
-  @ManyToOne("Customer", { nullable: true })
+  @ManyToOne("customers", { nullable: true })
   @JoinColumn({ name: "customerId" })
   customer!: Customer | null;
 
@@ -60,7 +60,7 @@ export class Quote {
   @Column({ type: "text", nullable: true })
   note!: string | null;
 
-  @OneToMany("QuoteItem", (item: QuoteItem) => item.quote)
+  @OneToMany("quote_items", (item: QuoteItem) => item.quote)
   items!: QuoteItem[];
 
   @DeleteDateColumn()

@@ -30,12 +30,12 @@ export default async function SettingsUsersPage({
   const page = Math.max(1, Number((await searchParams).page) || 1);
   const ds = await getDataSource();
   const [[users, total], roles] = await Promise.all([
-    ds.getRepository<User>("User").findAndCount({
+    ds.getRepository<User>("users").findAndCount({
       order: { name: "ASC" },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
     }) as Promise<[UserRow[], number]>,
-    ds.getRepository<Role>("Role").find({ order: { name: "ASC" } }),
+    ds.getRepository<Role>("roles").find({ order: { name: "ASC" } }),
   ]);
   const roleOpts = roles.map((r) => ({ id: r.id, label: r.label }));
 

@@ -28,7 +28,7 @@ export default async function SettingsServicesPage({
   const page = Math.max(1, Number((await searchParams).page) || 1);
   const ds = await getDataSource();
   const [services, total] = await ds
-    .getRepository<ServiceCatalog>("ServiceCatalog")
+    .getRepository<ServiceCatalog>("service_catalog")
     .findAndCount({
       order: { category: "ASC", name: "ASC" },
       skip: (page - 1) * PAGE_SIZE,

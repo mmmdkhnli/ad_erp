@@ -18,7 +18,7 @@ export default async function ProductionPage() {
   const canWrite = hasPermission(session.permissions, "production:write");
 
   const ds = await getDataSource();
-  const tasks = (await ds.getRepository<ProductionTask>("ProductionTask").find({
+  const tasks = (await ds.getRepository<ProductionTask>("production_tasks").find({
     relations: { order: { customer: true }, assignee: true },
     order: { position: "ASC", createdAt: "ASC" },
   })) as TaskFull[];
@@ -35,12 +35,12 @@ export default async function ProductionPage() {
   }));
 
   const [orders, users] = await Promise.all([
-    ds.getRepository<Order>("Order").find({
+    ds.getRepository<Order>("orders").find({
       relations: { customer: true },
       order: { createdAt: "DESC" },
       take: 100,
     }),
-    ds.getRepository<User>("User").find({ where: { isActive: true }, order: { name: "ASC" } }),
+    ds.getRepository<User>("users").find({ where: { isActive: true }, order: { name: "ASC" } }),
   ]);
 
   return (

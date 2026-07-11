@@ -40,7 +40,7 @@ export default async function OrderDetailPage({
   if (!Number.isInteger(orderId)) notFound();
 
   const ds = await getDataSource();
-  const order = (await ds.getRepository<Order>("Order").findOne({
+  const order = (await ds.getRepository<Order>("orders").findOne({
     where: { id: orderId },
     relations: { customer: true, items: true },
   })) as OrderFull | null;
@@ -48,13 +48,13 @@ export default async function OrderDetailPage({
 
   const quote = order.quoteId
     ? await ds
-        .getRepository<Quote>("Quote")
+        .getRepository<Quote>("quotes")
         .findOne({ where: { id: order.quoteId }, withDeleted: true })
     : null;
 
   const [invoices, expenses] = await Promise.all([
-    ds.getRepository<Invoice>("Invoice").find({ where: { orderId }, order: { createdAt: "DESC" } }),
-    ds.getRepository<Expense>("Expense").find({ where: { orderId } }),
+    ds.getRepository<Invoice>("invoices").find({ where: { orderId }, order: { createdAt: "DESC" } }),
+    ds.getRepository<Expense>("expenses").find({ where: { orderId } }),
   ]);
   const revenue = invoices.reduce((a, i) => a + Number(i.total), 0);
   const cost = expenses.reduce((a, e) => a + Number(e.amount), 0);

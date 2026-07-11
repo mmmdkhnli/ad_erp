@@ -22,7 +22,7 @@ export class Invoice {
   @Column({ type: "int" })
   orderId!: number;
 
-  @ManyToOne("Order", { nullable: true })
+  @ManyToOne("orders", { nullable: true })
   @JoinColumn({ name: "orderId" })
   order!: Order | null;
 

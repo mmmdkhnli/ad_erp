@@ -42,7 +42,7 @@ export async function createMaterial(input: MaterialFormValues): Promise<InvResu
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   }
   const ds = await getDataSource();
-  const repo = ds.getRepository<Material>("Material");
+  const repo = ds.getRepository<Material>("materials");
   const saved = await repo.save(
     repo.create({
       name: parsed.data.name,
@@ -75,7 +75,7 @@ export async function updateMaterial(
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   }
   const ds = await getDataSource();
-  await ds.getRepository<Material>("Material").update(id, {
+  await ds.getRepository<Material>("materials").update(id, {
     name: parsed.data.name,
     unit: parsed.data.unit,
     minQty: String(parsed.data.minQty),
@@ -96,8 +96,8 @@ export async function deleteMaterial(id: number): Promise<InvResult> {
   const { session, denied } = await guard("inventory:write");
   if (denied) return denied;
   const ds = await getDataSource();
-  await ds.getRepository<StockMovement>("StockMovement").delete({ materialId: id });
-  await ds.getRepository<Material>("Material").delete(id);
+  await ds.getRepository<StockMovement>("stock_movements").delete({ materialId: id });
+  await ds.getRepository<Material>("materials").delete(id);
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "Material",
@@ -120,7 +120,7 @@ export async function createStockMovement(
   }
   const { materialId, type, qty, unitCost, reason, orderId } = parsed.data;
   const ds = await getDataSource();
-  const matRepo = ds.getRepository<Material>("Material");
+  const matRepo = ds.getRepository<Material>("materials");
   const material = await matRepo.findOne({ where: { id: materialId } });
   if (!material) return { ok: false, error: "Material tapılmadı." };
 
@@ -141,7 +141,7 @@ export async function createStockMovement(
     newQty = round3(qty);
   }
 
-  await ds.getRepository<StockMovement>("StockMovement").save({
+  await ds.getRepository<StockMovement>("stock_movements").save({
     materialId,
     type,
     qty: String(qty),

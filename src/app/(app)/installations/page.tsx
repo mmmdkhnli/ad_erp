@@ -32,11 +32,11 @@ export default async function InstallationsPage() {
 
   const ds = await getDataSource();
   const [installations, orders] = await Promise.all([
-    ds.getRepository<Installation>("Installation").find({
+    ds.getRepository<Installation>("installations").find({
       relations: { order: { customer: true } },
       order: { scheduledAt: "ASC", createdAt: "DESC" },
     }) as Promise<InstFull[]>,
-    ds.getRepository<Order>("Order").find({ relations: { customer: true }, order: { createdAt: "DESC" }, take: 100 }),
+    ds.getRepository<Order>("orders").find({ relations: { customer: true }, order: { createdAt: "DESC" }, take: 100 }),
   ]);
 
   return (

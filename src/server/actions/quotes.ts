@@ -36,7 +36,7 @@ async function nextQuoteNumber(ds: DataSource): Promise<string> {
   const year = new Date().getFullYear();
   const prefix = `QUO-${year}-`;
   const rows = await ds
-    .getRepository<Quote>("Quote")
+    .getRepository<Quote>("quotes")
     .createQueryBuilder("q")
     .withDeleted()
     .select("q.number", "number")
@@ -51,7 +51,7 @@ async function nextQuoteNumber(ds: DataSource): Promise<string> {
 }
 
 async function saveItems(ds: DataSource, quoteId: number, items: ParsedItem[]) {
-  const repo = ds.getRepository<QuoteItem>("QuoteItem");
+  const repo = ds.getRepository<QuoteItem>("quote_items");
   for (const it of items) {
     await repo.save(
       repo.create({
@@ -81,7 +81,7 @@ export async function createQuote(input: QuoteFormValues): Promise<QuoteResult> 
   const data = parsed.data;
   const totals = quoteTotals(data.items, data.vatRate);
   const ds = await getDataSource();
-  const quoteRepo = ds.getRepository<Quote>("Quote");
+  const quoteRepo = ds.getRepository<Quote>("quotes");
   const number = await nextQuoteNumber(ds);
   const quote = await quoteRepo.save(
     quoteRepo.create({
@@ -125,7 +125,7 @@ export async function updateQuote(
   const data = parsed.data;
   const totals = quoteTotals(data.items, data.vatRate);
   const ds = await getDataSource();
-  await ds.getRepository<Quote>("Quote").update(id, {
+  await ds.getRepository<Quote>("quotes").update(id, {
     customerId: data.customerId,
     validUntil: data.validUntil,
     vatRate: String(data.vatRate),
@@ -135,7 +135,7 @@ export async function updateQuote(
     total: String(totals.total),
     note: data.note,
   });
-  await ds.getRepository<QuoteItem>("QuoteItem").delete({ quoteId: id });
+  await ds.getRepository<QuoteItem>("quote_items").delete({ quoteId: id });
   await saveItems(ds, id, data.items);
   await writeAudit(ds, {
     userId: session.userId,
@@ -153,7 +153,7 @@ export async function deleteQuote(id: number): Promise<QuoteResult> {
   const { session, denied } = await guard("quotes:write");
   if (denied) return denied;
   const ds = await getDataSource();
-  await ds.getRepository<Quote>("Quote").softDelete(id);
+  await ds.getRepository<Quote>("quotes").softDelete(id);
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "Quote",
@@ -174,7 +174,7 @@ export async function setQuoteStatus(
     return { ok: false, error: "Yanlış status." };
   }
   const ds = await getDataSource();
-  await ds.getRepository<Quote>("Quote").update(id, { status });
+  await ds.getRepository<Quote>("quotes").update(id, { status });
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "Quote",

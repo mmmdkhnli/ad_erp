@@ -36,12 +36,12 @@ export default async function CustomerDetailPage({
 
   const ds = await getDataSource();
   const customer = await ds
-    .getRepository<Customer>("Customer")
+    .getRepository<Customer>("customers")
     .findOne({ where: { id: customerId } });
   if (!customer) notFound();
 
   const interactions = await ds
-    .getRepository<Interaction>("Interaction")
+    .getRepository<Interaction>("interactions")
     .find({ where: { customerId }, order: { createdAt: "DESC" }, take: 50 });
 
   return (

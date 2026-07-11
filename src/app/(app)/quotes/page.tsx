@@ -27,7 +27,7 @@ export default async function QuotesPage({
 
   const ds = await getDataSource();
   const where = status && QUOTE_STATUS[status] ? { status } : {};
-  const [quotes, total] = (await ds.getRepository<Quote>("Quote").findAndCount({
+  const [quotes, total] = (await ds.getRepository<Quote>("quotes").findAndCount({
     where,
     relations: { customer: true },
     order: { createdAt: "DESC" },

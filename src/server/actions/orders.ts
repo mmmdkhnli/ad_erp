@@ -38,7 +38,7 @@ async function nextOrderNumber(ds: DataSource): Promise<string> {
   const year = new Date().getFullYear();
   const prefix = `ORD-${year}-`;
   const rows = await ds
-    .getRepository<Order>("Order")
+    .getRepository<Order>("orders")
     .createQueryBuilder("o")
     .withDeleted()
     .select("o.number", "number")
@@ -59,18 +59,18 @@ export async function convertQuoteToOrder(quoteId: number): Promise<OrderResult>
   const ds = await getDataSource();
 
   const quote = await ds
-    .getRepository<Quote>("Quote")
+    .getRepository<Quote>("quotes")
     .findOne({ where: { id: quoteId }, relations: { items: true } });
   if (!quote) return { ok: false, error: "Təklif tapılmadı." };
 
   const existing = await ds
-    .getRepository<Order>("Order")
+    .getRepository<Order>("orders")
     .findOne({ where: { quoteId } });
   if (existing) {
     return { ok: false, error: "Bu təklif artıq sifarişə çevrilib." };
   }
 
-  const orderRepo = ds.getRepository<Order>("Order");
+  const orderRepo = ds.getRepository<Order>("orders");
   const number = await nextOrderNumber(ds);
   const order = await orderRepo.save(
     orderRepo.create({
@@ -83,7 +83,7 @@ export async function convertQuoteToOrder(quoteId: number): Promise<OrderResult>
     }),
   );
 
-  const itemRepo = ds.getRepository<OrderItem>("OrderItem");
+  const itemRepo = ds.getRepository<OrderItem>("order_items");
   for (const it of quote.items ?? []) {
     await itemRepo.save(
       itemRepo.create({
@@ -99,7 +99,7 @@ export async function convertQuoteToOrder(quoteId: number): Promise<OrderResult>
 
   // Təklif təsdiqlənmiş sayılır
   if (quote.status !== "APPROVED") {
-    await ds.getRepository<Quote>("Quote").update(quoteId, { status: "APPROVED" });
+    await ds.getRepository<Quote>("quotes").update(quoteId, { status: "APPROVED" });
   }
 
   await writeAudit(ds, {
@@ -126,7 +126,7 @@ export async function setOrderStatus(
     return { ok: false, error: "Yanlış status." };
   }
   const ds = await getDataSource();
-  await ds.getRepository<Order>("Order").update(id, { status });
+  await ds.getRepository<Order>("orders").update(id, { status });
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "Order",
@@ -144,7 +144,7 @@ export async function deleteOrder(id: number): Promise<OrderResult> {
   const { session, denied } = await guard("orders:write");
   if (denied) return denied;
   const ds = await getDataSource();
-  await ds.getRepository<Order>("Order").softDelete(id);
+  await ds.getRepository<Order>("orders").softDelete(id);
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "Order",

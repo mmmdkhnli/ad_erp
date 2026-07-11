@@ -44,12 +44,12 @@ export default async function SettingsAuditPage({
   const page = Math.max(1, Number((await searchParams).page) || 1);
   const ds = await getDataSource();
   const [[logs, total], users] = await Promise.all([
-    ds.getRepository<AuditLog>("AuditLog").findAndCount({
+    ds.getRepository<AuditLog>("audit_logs").findAndCount({
       order: { createdAt: "DESC" },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
     }),
-    ds.getRepository<User>("User").find(),
+    ds.getRepository<User>("users").find(),
   ]);
   const userMap = new Map(users.map((u) => [u.id, u.name]));
 

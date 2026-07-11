@@ -28,7 +28,7 @@ export async function loginAction(
 
   try {
     const ds = await getDataSource();
-    await ds.getRepository("AuditLog").save({
+    await ds.getRepository("audit_logs").save({
       userId: session.userId,
       entityType: "User",
       entityId: String(session.userId),

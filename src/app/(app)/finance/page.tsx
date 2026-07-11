@@ -42,16 +42,16 @@ export default async function FinancePage({
 
   const ds = await getDataSource();
   const [[invoices, total], totalInvoiced, totalPaid, totalExpenses, orders] = await Promise.all([
-    ds.getRepository<Invoice>("Invoice").findAndCount({
+    ds.getRepository<Invoice>("invoices").findAndCount({
       relations: { order: { customer: true } },
       order: { createdAt: "DESC" },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
     }) as Promise<[InvoiceRow[], number]>,
-    sumOf(ds, "Invoice", "total"),
-    sumOf(ds, "Payment", "amount"),
-    sumOf(ds, "Expense", "amount"),
-    ds.getRepository<Order>("Order").find({ relations: { customer: true }, order: { createdAt: "DESC" }, take: 100 }),
+    sumOf(ds, "invoices", "total"),
+    sumOf(ds, "payments", "amount"),
+    sumOf(ds, "expenses", "amount"),
+    ds.getRepository<Order>("orders").find({ relations: { customer: true }, order: { createdAt: "DESC" }, take: 100 }),
   ]);
 
   const receivable = totalInvoiced - totalPaid;

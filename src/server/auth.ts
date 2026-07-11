@@ -27,7 +27,7 @@ export async function authenticate(
   password: string,
 ): Promise<SessionPayload | null> {
   const ds = await getDataSource();
-  const user = await ds.getRepository<User>("User").findOne({
+  const user = await ds.getRepository<User>("users").findOne({
     where: { email },
     relations: { role: true },
   });

@@ -26,7 +26,7 @@ export default async function CustomersPage({
   const page = Math.max(1, Number(pageParam) || 1);
 
   const ds = await getDataSource();
-  const repo = ds.getRepository<Customer>("Customer");
+  const repo = ds.getRepository<Customer>("customers");
   const where = q
     ? [
         { name: Like(`%${q}%`) },

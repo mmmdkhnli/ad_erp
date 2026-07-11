@@ -33,7 +33,7 @@ export async function createInstallation(
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   }
   const ds = await getDataSource();
-  const saved = await ds.getRepository<Installation>("Installation").save({
+  const saved = await ds.getRepository<Installation>("installations").save({
     orderId: parsed.data.orderId,
     type: parsed.data.type,
     address: parsed.data.address,
@@ -62,7 +62,7 @@ export async function setInstallationStatus(
   if (denied) return denied;
   if (!STATUSES.includes(status)) return { ok: false, error: "Yanlış status." };
   const ds = await getDataSource();
-  await ds.getRepository<Installation>("Installation").update(id, { status });
+  await ds.getRepository<Installation>("installations").update(id, { status });
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "Installation",
@@ -78,7 +78,7 @@ export async function deleteInstallation(id: number): Promise<InstResult> {
   const { session, denied } = await guard("installations:write");
   if (denied) return denied;
   const ds = await getDataSource();
-  await ds.getRepository<Installation>("Installation").delete(id);
+  await ds.getRepository<Installation>("installations").delete(id);
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "Installation",

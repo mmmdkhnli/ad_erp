@@ -12,7 +12,7 @@ export async function writeAudit(
   },
 ): Promise<void> {
   try {
-    await ds.getRepository("AuditLog").save({
+    await ds.getRepository("audit_logs").save({
       userId: entry.userId ?? null,
       entityType: entry.entityType,
       entityId: entry.entityId != null ? String(entry.entityId) : null,

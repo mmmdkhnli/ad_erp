@@ -19,7 +19,7 @@ export class ProductionTask {
   @Column({ type: "int" })
   orderId!: number;
 
-  @ManyToOne("Order", { nullable: true })
+  @ManyToOne("orders", { nullable: true })
   @JoinColumn({ name: "orderId" })
   order!: Order | null;
 
@@ -36,7 +36,7 @@ export class ProductionTask {
   @Column({ type: "int", nullable: true })
   assigneeId!: number | null;
 
-  @ManyToOne("User", { nullable: true })
+  @ManyToOne("users", { nullable: true })
   @JoinColumn({ name: "assigneeId" })
   assignee!: User | null;
 

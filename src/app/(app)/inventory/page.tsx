@@ -26,12 +26,12 @@ export default async function InventoryPage({
   const page = Math.max(1, Number((await searchParams).page) || 1);
 
   const ds = await getDataSource();
-  const matRepo = ds.getRepository<Material>("Material");
+  const matRepo = ds.getRepository<Material>("materials");
   const [[materials, total], allMats, movements, orders] = await Promise.all([
     matRepo.findAndCount({ order: { name: "ASC" }, skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }),
     matRepo.find(),
-    ds.getRepository<StockMovement>("StockMovement").find({ order: { createdAt: "DESC" }, take: 12 }),
-    ds.getRepository<Order>("Order").find({ order: { createdAt: "DESC" }, take: 100 }),
+    ds.getRepository<StockMovement>("stock_movements").find({ order: { createdAt: "DESC" }, take: 12 }),
+    ds.getRepository<Order>("orders").find({ order: { createdAt: "DESC" }, take: 100 }),
   ]);
 
   const lowStock = allMats.filter(

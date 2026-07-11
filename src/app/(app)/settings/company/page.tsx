@@ -15,7 +15,7 @@ const NAV = [
 export default async function SettingsCompanyPage() {
   await requirePermission("settings:read");
   const ds = await getDataSource();
-  const company = await ds.getRepository<CompanySettings>("CompanySettings").findOne({ where: {} });
+  const company = await ds.getRepository<CompanySettings>("company_settings").findOne({ where: {} });
 
   return (
     <div>

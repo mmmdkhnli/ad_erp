@@ -26,7 +26,7 @@ export default async function LeadsPage({
   const page = Math.max(1, Number(pageParam) || 1);
 
   const ds = await getDataSource();
-  const repo = ds.getRepository<Lead>("Lead");
+  const repo = ds.getRepository<Lead>("leads");
   const where = q
     ? [{ name: Like(`%${q}%`) }, { phone: Like(`%${q}%`) }]
     : {};

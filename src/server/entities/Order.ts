@@ -28,7 +28,7 @@ export class Order {
   @Column({ type: "int" })
   customerId!: number;
 
-  @ManyToOne("Customer", { nullable: true })
+  @ManyToOne("customers", { nullable: true })
   @JoinColumn({ name: "customerId" })
   customer!: Customer | null;
 
@@ -48,7 +48,7 @@ export class Order {
   @Column({ type: "int", nullable: true })
   assignedToId!: number | null;
 
-  @OneToMany("OrderItem", (item: OrderItem) => item.order)
+  @OneToMany("order_items", (item: OrderItem) => item.order)
   items!: OrderItem[];
 
   @DeleteDateColumn()

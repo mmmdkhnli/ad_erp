@@ -39,7 +39,7 @@ export async function createService(input: ServiceFormValues): Promise<SetResult
   const parsed = serviceSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   const ds = await getDataSource();
-  const repo = ds.getRepository<ServiceCatalog>("ServiceCatalog");
+  const repo = ds.getRepository<ServiceCatalog>("service_catalog");
   const saved = await repo.save(
     repo.create({
       name: parsed.data.name,
@@ -61,7 +61,7 @@ export async function updateService(id: number, input: ServiceFormValues): Promi
   const parsed = serviceSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   const ds = await getDataSource();
-  await ds.getRepository<ServiceCatalog>("ServiceCatalog").update(id, {
+  await ds.getRepository<ServiceCatalog>("service_catalog").update(id, {
     name: parsed.data.name,
     category: parsed.data.category,
     unit: parsed.data.unit,
@@ -78,7 +78,7 @@ export async function deleteService(id: number): Promise<SetResult> {
   const { session, denied } = await guard("settings:write");
   if (denied) return denied;
   const ds = await getDataSource();
-  await ds.getRepository<ServiceCatalog>("ServiceCatalog").delete(id);
+  await ds.getRepository<ServiceCatalog>("service_catalog").delete(id);
   await writeAudit(ds, { userId: session.userId, entityType: "ServiceCatalog", entityId: id, action: "DELETE" });
   revalidatePath("/settings/services");
   return { ok: true };
@@ -93,7 +93,7 @@ export async function createUser(input: UserFormValues): Promise<SetResult> {
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   if (!parsed.data.password) return { ok: false, error: "Yeni istifadəçi üçün parol tələb olunur." };
   const ds = await getDataSource();
-  const repo = ds.getRepository<User>("User");
+  const repo = ds.getRepository<User>("users");
   const email = parsed.data.email.toLowerCase();
   const exists = await repo.findOne({ where: { email } });
   if (exists) return { ok: false, error: "Bu email artıq mövcuddur." };
@@ -117,7 +117,7 @@ export async function updateUser(id: number, input: UserFormValues): Promise<Set
   const parsed = userSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   const ds = await getDataSource();
-  const repo = ds.getRepository<User>("User");
+  const repo = ds.getRepository<User>("users");
   const patch: Record<string, unknown> = {
     name: parsed.data.name,
     email: parsed.data.email.toLowerCase(),
@@ -136,7 +136,7 @@ export async function deleteUser(id: number): Promise<SetResult> {
   if (denied) return denied;
   if (id === session.userId) return { ok: false, error: "Öz hesabınızı silə bilməzsiniz." };
   const ds = await getDataSource();
-  await ds.getRepository<User>("User").delete(id);
+  await ds.getRepository<User>("users").delete(id);
   await writeAudit(ds, { userId: session.userId, entityType: "User", entityId: id, action: "DELETE" });
   revalidatePath("/settings/users");
   return { ok: true };
@@ -150,7 +150,7 @@ export async function updateCompany(input: CompanyFormValues): Promise<SetResult
   const parsed = companySchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   const ds = await getDataSource();
-  const repo = ds.getRepository<CompanySettings>("CompanySettings");
+  const repo = ds.getRepository<CompanySettings>("company_settings");
   const existing = await repo.findOne({ where: {} });
   const data = {
     name: parsed.data.name,

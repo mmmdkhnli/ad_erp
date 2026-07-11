@@ -16,7 +16,7 @@ export class QuoteItem {
   @Column({ type: "int" })
   quoteId!: number;
 
-  @ManyToOne("Quote", (q: Quote) => q.items, { onDelete: "CASCADE" })
+  @ManyToOne("quotes", (q: Quote) => q.items, { onDelete: "CASCADE" })
   @JoinColumn({ name: "quoteId" })
   quote!: Quote;
 

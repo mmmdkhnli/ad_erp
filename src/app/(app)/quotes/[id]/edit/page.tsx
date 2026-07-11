@@ -20,14 +20,14 @@ export default async function EditQuotePage({
 
   const ds = await getDataSource();
   const quote = await ds
-    .getRepository<Quote>("Quote")
+    .getRepository<Quote>("quotes")
     .findOne({ where: { id: quoteId }, relations: { items: true } });
   if (!quote) notFound();
 
   const [customers, services] = await Promise.all([
-    ds.getRepository<Customer>("Customer").find({ order: { name: "ASC" } }),
+    ds.getRepository<Customer>("customers").find({ order: { name: "ASC" } }),
     ds
-      .getRepository<ServiceCatalog>("ServiceCatalog")
+      .getRepository<ServiceCatalog>("service_catalog")
       .find({ where: { isActive: true }, order: { name: "ASC" } }),
   ]);
 

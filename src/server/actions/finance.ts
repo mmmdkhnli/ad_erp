@@ -40,7 +40,7 @@ async function nextInvoiceNumber(ds: DataSource): Promise<string> {
   const year = new Date().getFullYear();
   const prefix = `INV-${year}-`;
   const rows = await ds
-    .getRepository<Invoice>("Invoice")
+    .getRepository<Invoice>("invoices")
     .createQueryBuilder("i")
     .select("i.number", "number")
     .where("i.number LIKE :p", { p: `${prefix}%` })
@@ -55,11 +55,11 @@ async function nextInvoiceNumber(ds: DataSource): Promise<string> {
 
 /** Faktura statusunu ödənişlərə görə yeniləyir. */
 async function recomputeInvoiceStatus(ds: DataSource, invoiceId: number) {
-  const invoiceRepo = ds.getRepository<Invoice>("Invoice");
+  const invoiceRepo = ds.getRepository<Invoice>("invoices");
   const invoice = await invoiceRepo.findOne({ where: { id: invoiceId } });
   if (!invoice) return;
   const { sum } = (await ds
-    .getRepository<Payment>("Payment")
+    .getRepository<Payment>("payments")
     .createQueryBuilder("p")
     .select("COALESCE(SUM(p.amount),0)", "sum")
     .where("p.invoiceId = :id", { id: invoiceId })
@@ -81,7 +81,7 @@ export async function createInvoice(input: InvoiceFormValues): Promise<FinResult
   const vatAmount = round2((total * 18) / 118); // ƏDV brutto məbləğdən ayrılır
   const amount = round2(total - vatAmount);
   const ds = await getDataSource();
-  const repo = ds.getRepository<Invoice>("Invoice");
+  const repo = ds.getRepository<Invoice>("invoices");
   const number = await nextInvoiceNumber(ds);
   const saved = await repo.save(
     repo.create({
@@ -116,7 +116,7 @@ export async function addPayment(input: PaymentFormValues): Promise<FinResult> {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   }
   const ds = await getDataSource();
-  await ds.getRepository<Payment>("Payment").save({
+  await ds.getRepository<Payment>("payments").save({
     invoiceId: parsed.data.invoiceId,
     amount: String(parsed.data.amount),
     method: parsed.data.method,
@@ -141,8 +141,8 @@ export async function deleteInvoice(id: number): Promise<FinResult> {
   const { session, denied } = await guard("finance:write");
   if (denied) return denied;
   const ds = await getDataSource();
-  await ds.getRepository<Payment>("Payment").delete({ invoiceId: id });
-  await ds.getRepository<Invoice>("Invoice").delete(id);
+  await ds.getRepository<Payment>("payments").delete({ invoiceId: id });
+  await ds.getRepository<Invoice>("invoices").delete(id);
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "Invoice",
@@ -161,7 +161,7 @@ export async function createExpense(input: ExpenseFormValues): Promise<FinResult
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   }
   const ds = await getDataSource();
-  const saved = await ds.getRepository<Expense>("Expense").save({
+  const saved = await ds.getRepository<Expense>("expenses").save({
     orderId: parsed.data.orderId,
     category: parsed.data.category,
     amount: String(parsed.data.amount),
@@ -186,7 +186,7 @@ export async function deleteExpense(id: number): Promise<FinResult> {
   const { session, denied } = await guard("finance:write");
   if (denied) return denied;
   const ds = await getDataSource();
-  await ds.getRepository<Expense>("Expense").delete(id);
+  await ds.getRepository<Expense>("expenses").delete(id);
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "Expense",

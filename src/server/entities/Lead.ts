@@ -39,7 +39,7 @@ export class Lead {
   @Column({ type: "int", nullable: true })
   customerId!: number | null;
 
-  @ManyToOne("User", { nullable: true })
+  @ManyToOne("users", { nullable: true })
   @JoinColumn({ name: "assignedToId" })
   assignedTo!: User | null;
 

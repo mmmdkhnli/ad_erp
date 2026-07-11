@@ -9,10 +9,10 @@ export default async function NewQuotePage() {
   await requirePermission("quotes:write");
   const ds = await getDataSource();
   const customers = await ds
-    .getRepository<Customer>("Customer")
+    .getRepository<Customer>("customers")
     .find({ order: { name: "ASC" } });
   const services = await ds
-    .getRepository<ServiceCatalog>("ServiceCatalog")
+    .getRepository<ServiceCatalog>("service_catalog")
     .find({ where: { isActive: true }, order: { name: "ASC" } });
 
   return (

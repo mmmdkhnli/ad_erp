@@ -33,7 +33,7 @@ export async function createProductionTask(
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   }
   const ds = await getDataSource();
-  const repo = ds.getRepository<ProductionTask>("ProductionTask");
+  const repo = ds.getRepository<ProductionTask>("production_tasks");
   const saved = await repo.save(repo.create(parsed.data));
   await writeAudit(ds, {
     userId: session.userId,
@@ -52,7 +52,7 @@ export async function setTaskStage(id: number, stage: string): Promise<ProdResul
   if (denied) return denied;
   if (!STAGES.includes(stage)) return { ok: false, error: "Yanlış mərhələ." };
   const ds = await getDataSource();
-  await ds.getRepository<ProductionTask>("ProductionTask").update(id, { stage });
+  await ds.getRepository<ProductionTask>("production_tasks").update(id, { stage });
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "ProductionTask",
@@ -68,7 +68,7 @@ export async function deleteProductionTask(id: number): Promise<ProdResult> {
   const { session, denied } = await guard("production:write");
   if (denied) return denied;
   const ds = await getDataSource();
-  await ds.getRepository<ProductionTask>("ProductionTask").delete(id);
+  await ds.getRepository<ProductionTask>("production_tasks").delete(id);
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "ProductionTask",

@@ -26,7 +26,7 @@ export class Role {
   @Column({ type: "simple-json" })
   permissions!: string[];
 
-  @OneToMany("User", (user: User) => user.role)
+  @OneToMany("users", (user: User) => user.role)
   users!: User[];
 
   @CreateDateColumn()

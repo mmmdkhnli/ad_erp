@@ -29,14 +29,14 @@ export default async function InvoiceDetailPage({
   if (!Number.isInteger(invoiceId)) notFound();
 
   const ds = await getDataSource();
-  const invoice = (await ds.getRepository<Invoice>("Invoice").findOne({
+  const invoice = (await ds.getRepository<Invoice>("invoices").findOne({
     where: { id: invoiceId },
     relations: { order: { customer: true } },
   })) as InvoiceFull | null;
   if (!invoice) notFound();
 
   const payments = await ds
-    .getRepository<Payment>("Payment")
+    .getRepository<Payment>("payments")
     .find({ where: { invoiceId }, order: { paidAt: "DESC" } });
 
   const paid = payments.reduce((s, p) => s + Number(p.amount), 0);

@@ -26,7 +26,7 @@ export default async function OrdersPage({
 
   const ds = await getDataSource();
   const where = status && ORDER_STATUS[status] ? { status } : {};
-  const [orders, total] = (await ds.getRepository<Order>("Order").findAndCount({
+  const [orders, total] = (await ds.getRepository<Order>("orders").findAndCount({
     where,
     relations: { customer: true },
     order: { createdAt: "DESC" },

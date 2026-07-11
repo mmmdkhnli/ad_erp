@@ -28,7 +28,7 @@ export default async function QuoteDetailPage({
   if (!Number.isInteger(quoteId)) notFound();
 
   const ds = await getDataSource();
-  const quote = (await ds.getRepository<Quote>("Quote").findOne({
+  const quote = (await ds.getRepository<Quote>("quotes").findOne({
     where: { id: quoteId },
     relations: { customer: true, items: true },
   })) as QuoteFull | null;

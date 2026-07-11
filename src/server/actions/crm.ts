@@ -44,7 +44,7 @@ export async function createCustomer(input: CustomerFormValues): Promise<ActionR
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   }
   const ds = await getDataSource();
-  const repo = ds.getRepository<Customer>("Customer");
+  const repo = ds.getRepository<Customer>("customers");
   const saved = await repo.save(repo.create(parsed.data));
   await writeAudit(ds, {
     userId: session.userId,
@@ -65,7 +65,7 @@ export async function updateCustomer(id: number, input: CustomerFormValues): Pro
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   }
   const ds = await getDataSource();
-  await ds.getRepository<Customer>("Customer").update(id, parsed.data);
+  await ds.getRepository<Customer>("customers").update(id, parsed.data);
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "Customer",
@@ -82,7 +82,7 @@ export async function deleteCustomer(id: number): Promise<ActionResult> {
   const { session, denied } = await guard("crm:write");
   if (denied) return denied;
   const ds = await getDataSource();
-  await ds.getRepository<Customer>("Customer").softDelete(id);
+  await ds.getRepository<Customer>("customers").softDelete(id);
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "Customer",
@@ -103,7 +103,7 @@ export async function createLead(input: LeadFormValues): Promise<ActionResult> {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   }
   const ds = await getDataSource();
-  const repo = ds.getRepository<Lead>("Lead");
+  const repo = ds.getRepository<Lead>("leads");
   const saved = await repo.save(repo.create({ ...parsed.data, assignedToId: session.userId }));
   await writeAudit(ds, {
     userId: session.userId,
@@ -124,7 +124,7 @@ export async function updateLead(id: number, input: LeadFormValues): Promise<Act
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   }
   const ds = await getDataSource();
-  await ds.getRepository<Lead>("Lead").update(id, parsed.data);
+  await ds.getRepository<Lead>("leads").update(id, parsed.data);
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "Lead",
@@ -140,7 +140,7 @@ export async function deleteLead(id: number): Promise<ActionResult> {
   const { session, denied } = await guard("crm:write");
   if (denied) return denied;
   const ds = await getDataSource();
-  await ds.getRepository<Lead>("Lead").delete(id);
+  await ds.getRepository<Lead>("leads").delete(id);
   await writeAudit(ds, {
     userId: session.userId,
     entityType: "Lead",
@@ -156,12 +156,12 @@ export async function convertLead(id: number): Promise<ActionResult> {
   const { session, denied } = await guard("crm:write");
   if (denied) return denied;
   const ds = await getDataSource();
-  const leadRepo = ds.getRepository<Lead>("Lead");
+  const leadRepo = ds.getRepository<Lead>("leads");
   const lead = await leadRepo.findOne({ where: { id } });
   if (!lead) return { ok: false, error: "Lead tapılmadı." };
   if (lead.customerId) return { ok: false, error: "Bu lead artıq müştəriyə çevrilib." };
 
-  const custRepo = ds.getRepository<Customer>("Customer");
+  const custRepo = ds.getRepository<Customer>("customers");
   const customer = await custRepo.save(
     custRepo.create({
       name: lead.name,
@@ -199,7 +199,7 @@ export async function addInteraction(
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Yanlış məlumat." };
   }
   const ds = await getDataSource();
-  await ds.getRepository("Interaction").save({
+  await ds.getRepository("interactions").save({
     customerId,
     userId: session.userId,
     type: parsed.data.type,

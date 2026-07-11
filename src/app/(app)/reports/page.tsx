@@ -38,12 +38,12 @@ export default async function ReportsPage({
 
   const ds = await getDataSource();
   const [quotes, orders, invoices, payments, expenses, prodTasks] = await Promise.all([
-    ds.getRepository<Quote>("Quote").find(),
-    ds.getRepository<Order>("Order").find({ relations: { customer: true } }) as Promise<OrderRow[]>,
-    ds.getRepository<Invoice>("Invoice").find(),
-    ds.getRepository<Payment>("Payment").find(),
-    ds.getRepository<Expense>("Expense").find(),
-    ds.getRepository<ProductionTask>("ProductionTask").find(),
+    ds.getRepository<Quote>("quotes").find(),
+    ds.getRepository<Order>("orders").find({ relations: { customer: true } }) as Promise<OrderRow[]>,
+    ds.getRepository<Invoice>("invoices").find(),
+    ds.getRepository<Payment>("payments").find(),
+    ds.getRepository<Expense>("expenses").find(),
+    ds.getRepository<ProductionTask>("production_tasks").find(),
   ]);
 
   const fQuotes = quotes.filter((q) => inRange(q.createdAt));

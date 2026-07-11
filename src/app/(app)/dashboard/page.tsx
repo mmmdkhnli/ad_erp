@@ -25,16 +25,16 @@ export default async function DashboardPage() {
   const ds = await getDataSource();
 
   const [orders, invoices, payments, pendingQuotes, productionLoad] = await Promise.all([
-    ds.getRepository<Order>("Order").find({
+    ds.getRepository<Order>("orders").find({
       relations: { customer: true },
       order: { createdAt: "DESC" },
       take: 200,
     }) as Promise<OrderRow[]>,
-    ds.getRepository<Invoice>("Invoice").find(),
-    ds.getRepository<Payment>("Payment").find(),
-    ds.getRepository<Quote>("Quote").count({ where: { status: "SENT" } }),
+    ds.getRepository<Invoice>("invoices").find(),
+    ds.getRepository<Payment>("payments").find(),
+    ds.getRepository<Quote>("quotes").count({ where: { status: "SENT" } }),
     ds
-      .getRepository<ProductionTask>("ProductionTask")
+      .getRepository<ProductionTask>("production_tasks")
       .createQueryBuilder("t")
       .where("t.stage != :done", { done: "DONE" })
       .getCount(),

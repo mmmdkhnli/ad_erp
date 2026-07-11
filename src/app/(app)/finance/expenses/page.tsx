@@ -23,7 +23,7 @@ export default async function ExpensesPage({
   const page = Math.max(1, Number((await searchParams).page) || 1);
 
   const ds = await getDataSource();
-  const expenseRepo = ds.getRepository<Expense>("Expense");
+  const expenseRepo = ds.getRepository<Expense>("expenses");
   const [[expenses, count], sumRow, orders] = await Promise.all([
     expenseRepo.findAndCount({
       order: { spentAt: "DESC" },
@@ -31,7 +31,7 @@ export default async function ExpensesPage({
       take: PAGE_SIZE,
     }),
     expenseRepo.createQueryBuilder("e").select("COALESCE(SUM(e.amount),0)", "s").getRawOne<{ s: string }>(),
-    ds.getRepository<Order>("Order").find({ relations: { customer: true }, order: { createdAt: "DESC" }, take: 100 }),
+    ds.getRepository<Order>("orders").find({ relations: { customer: true }, order: { createdAt: "DESC" }, take: 100 }),
   ]);
 
   const total = Number(sumRow?.s ?? 0);

@@ -24,7 +24,7 @@ export class User {
   @Column({ type: "varchar", length: 255 })
   passwordHash!: string;
 
-  @ManyToOne("Role", (role: Role) => role.users, { eager: true })
+  @ManyToOne("roles", (role: Role) => role.users, { eager: true })
   @JoinColumn({ name: "roleId" })
   role!: Role;
 
