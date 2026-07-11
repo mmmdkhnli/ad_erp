@@ -7,11 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typeorm": "tsx ./node_modules/typeorm/cli.js -d ./src/server/data-source.ts",
+    "typeorm": "tsx --env-file=.env ./node_modules/typeorm/cli.js -d ./src/server/data-source.ts",
     "migration:generate": "npm run typeorm -- migration:generate ./src/server/migrations/Migration",
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
-    "seed": "tsx ./src/scripts/seed.ts"
+    "seed": "tsx --env-file=.env ./src/scripts/seed.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
