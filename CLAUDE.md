@@ -63,8 +63,8 @@ DB: XAMPP MySQL, `admedia_erp`, localhost, user `root`, parolsuz (`.env`-də kon
 
 ## TypeORM inteqrasiya dərsləri (Next 16)
 - Entity-lərdə **açıq sütun tipləri** yaz (`@Column({ type: "varchar" })`) — `tsx`/esbuild decorator metadata emit etmir.
-- Dövri relation-larda **string target** + `import type` işlət (`@ManyToOne("Role", ...)`) — TDZ/circular import xətasının qarşısını alır.
-- `getRepository`-də **string entity adı** (`ds.getRepository("Customer")`) — dev HMR-də class identity dəyişəndə metadata uyğunsuzluğunu aradan qaldırır.
+- Dövri relation-larda **string target** + `import type` işlət — TDZ/circular import xətasının qarşısını alır.
+- ⚠️ **getRepository və relation target-lərində CƏDVƏL ADI işlət** (`ds.getRepository("customers")`, `@ManyToOne("orders", ...)`), class/entity adı YOX. Səbəb: (1) dev HMR class identity-ni dəyişir; (2) `next build` production-da class adlarını minify edir (`User`→`h`) → "Entity metadata for h#users not found". `@Entity({name:"..."})`-dəki cədvəl adı string literaldır, minify olunmur → həm dev, həm production işləyir. Köməkçilərə (`sumOf`) də cədvəl adı ötür.
 - DataSource-da `migrations` glob-u yalnız CLI üçün (`NEXT_RUNTIME` yoxlaması) — Next runtime glob require edə bilmir.
 - `next.config.ts`: `serverExternalPackages: ["typeorm", "mysql2"]`.
 
