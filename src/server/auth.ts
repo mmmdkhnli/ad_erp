@@ -51,7 +51,10 @@ export async function establishSession(payload: SessionPayload): Promise<void> {
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
-    secure: process.env.NODE_ENV === "production",
+    // Yalnız HTTPS-də Secure et. HTTP-də (IP ilə) Secure cookie brauzerdə
+    // saxlanmır → hər naviqasiyada login-ə atır. HTTPS qurulanda .env-də
+    // COOKIE_SECURE=true təyin et.
+    secure: process.env.COOKIE_SECURE === "true",
   });
 }
 
