@@ -1,11 +1,13 @@
 import { Search, LogOut } from "lucide-react";
 import { logoutAction } from "@/server/actions/auth";
-import { ROLE_LABELS } from "@/lib/constants";
+import { ROLE_LABELS, type NavItem } from "@/lib/constants";
 import type { SessionPayload } from "@/lib/session";
+import { MobileNav } from "./mobile-nav";
 
-export function Topbar({ user }: { user: SessionPayload }) {
+export function Topbar({ user, items }: { user: SessionPayload; items: NavItem[] }) {
   return (
     <header className="flex h-14 shrink-0 items-center gap-4 border-b border-hairline bg-surface px-5">
+      <MobileNav items={items} />
       <div className="relative hidden max-w-sm flex-1 items-center sm:flex">
         <Search className="absolute left-3 h-4 w-4 text-ink-faint" />
         <input
